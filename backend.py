@@ -43,7 +43,7 @@ def file_page():
     require_captcha = attempts >= 4
 
     # проверка CAPTCHA
-    if require_captcha and captcha != "9315":
+    if require_captcha and captcha != "1234":
         return jsonify({"error": "Требуется CAPTCHA"}), 400
 
     if pin == correct_pin:
