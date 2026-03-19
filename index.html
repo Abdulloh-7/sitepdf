@@ -673,19 +673,50 @@
             }
         });
 
-        function checkPin() {
-            const pinInput = document.getElementById('pin');
-            const pinError = document.getElementById('pinError');
-            const pinValue = pinInput.value;
-            
-            if (pinValue.length === 4 && /^\d+$/.test(pinValue)) {
-                pinError.style.display = 'none';
-                alert(translations[currentLang].pinLabel + ': ' + pinValue);
-            } else {
-                pinError.style.display = 'block';
-                pinInput.focus();
-            }
+        async function checkPin() {
+    const pinInput = document.getElementById('pin');
+    const pinError = document.getElementById('pinError');
+    const pinValue = pinInput.value;
+
+    if (pinValue.length !== 4 || !/^\d+$/.test(pinValue)) {
+        pinError.style.display = 'block';
+        pinInput.focus();
+        return;
+    }
+
+    pinError.style.display = 'none';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const guid = urlParams.get('guid');
+
+    if (!guid) {
+        alert("GUID не найден в ссылке");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('pin', pinValue);
+
+    try {
+        const response = await fetch(`/file?guid=${guid}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const fileURL = URL.createObjectURL(blob);
+            window.open(fileURL, '_blank'); // PDF открывается в новой вкладке
+        } else {
+            const data = await response.json();
+            pinError.textContent = data.error || "Ошибка";
+            pinError.style.display = 'block';
         }
+    } catch (error) {
+        pinError.textContent = "Ошибка сервера";
+        pinError.style.display = 'block';
+    }
+}
 
         document.getElementById('pin').addEventListener('keydown', function(e) {
             if ([46, 8, 9, 27, 13, 110, 190].includes(e.keyCode) ||
