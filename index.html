@@ -1,30 +1,525 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Загрузка PDF</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Единый портал госуслуг | Вход в систему</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #eef2f7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Верхняя навигация */
+        .top-nav {
+            background-color: white;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #2b3d5c;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: #2b3d5c;
+            color: white !important;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            color: #2b3d5c;
+            font-weight: 500;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .lang-btn:hover {
+            background-color: #2b3d5c;
+            color: white;
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            min-width: 150px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .lang-dropdown.show {
+            display: block;
+        }
+
+        .lang-option {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2b3d5c;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .lang-option:hover {
+            background-color: #2b3d5c;
+            color: white;
+        }
+
+        .lang-option:not(:last-child) {
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        /* Основная навигация (вторая строка) */
+        .main-nav {
+            background-color: white;
+            padding: 0.8rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .portal-image {
+            max-height: 50px;
+            width: auto;
+            border-right: 2px solid #e0e6ed;
+            padding-right: 1rem;
+        }
+
+        .portal-image svg {
+            max-height: 50px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2b3d5c;
+            text-decoration: none;
+            line-height: 1.3;
+        }
+
+        .logo-text small {
+            display: block;
+            font-size: 0.75rem;
+            color: #7a8a9e;
+            font-weight: 400;
+            margin-top: 0.2rem;
+        }
+
+        .main-links a {
+            color: #2b3d5c;
+            text-decoration: none;
+            margin-right: 1.8rem;
+            font-weight: 500;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .main-links a.active {
+            border-bottom-color: #ffc107;
+        }
+
+        /* Основной контейнер */
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Карточка авторизации - обновленная в точности как на изображении */
+        .auth-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+        }
+
+        /* Текст авторизации */
+        .auth-text {
+            color: #2b3d5c;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Ссылка для авторизации */
+        .auth-link {
+            margin-bottom: 2rem;
+        }
+
+        .auth-link a {
+            color: #2b3d5c;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+            border-bottom: 1px dashed #2b3d5c;
+            padding-bottom: 2px;
+        }
+
+        .auth-link a:hover {
+            border-bottom: 1px solid #2b3d5c;
+        }
+
+        /* Заголовок для PIN */
+        .pin-title {
+            color: #2b3d5c;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        /* Форма ввода PIN */
+        .pin-form {
+            margin-bottom: 1rem;
+        }
+
+        .pin-label {
+            display: block;
+            color: #2b3d5c;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pin-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pin-input-group input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ccd4e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: border 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .pin-input-group input::-webkit-outer-spin-button,
+        .pin-input-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .pin-input-group input:focus {
+            outline: none;
+            border-color: #2b3d5c;
+            box-shadow: 0 0 0 2px rgba(43, 61, 92, 0.1);
+        }
+
+        .pin-input-group input::placeholder {
+            color: #2b3d5c;
+            font-weight: 600;
+            opacity: 0.7;
+        }
+
+        .pin-input-group button {
+            background-color: #2b3d5c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-width: 100px;
+        }
+
+        .pin-input-group button:hover {
+            background-color: #1f2e44;
+        }
+
+        .pin-hint {
+            color: #7a8a9e;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .pin-hint::before {
+            content: "ℹ️";
+            opacity: 0.7;
+            font-size: 1rem;
+        }
+
+        .pin-error {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #7a8a9e;
+            font-size: 0.85rem;
+            border-top: 1px solid #d9e0e8;
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Введите PIN для открытия PDF</h1>
-
-    <input type="text" id="pin" maxlength="4" placeholder="PIN" />
-
-    <div id="captcha-container" style="display:none;">
-      <img src="captcha.png" alt="CAPTCHA" />
-      <input type="text" id="captcha" placeholder="Введите код с картинки" />
+    <!-- Верхняя навигация -->
+    <div class="top-nav">
+        <div class="nav-left">
+            <a href="#" class="nav-item" data-key="main">Главная</a>
+        </div>
+        <div class="nav-right">
+            <button class="lang-btn" id="langBtn" data-key="lang">RU</button>
+            <a href="#" class="nav-item" data-key="login">Войти</a>
+            
+            <!-- Выпадающее меню языков -->
+            <div class="lang-dropdown" id="langDropdown">
+                <div class="lang-option" data-lang="uz">Ўзбекча</div>
+                <div class="lang-option" data-lang="oz">O'ZBEKCHA</div>
+                <div class="lang-option" data-lang="ru">РУССКИЙ</div>
+            </div>
+        </div>
     </div>
 
-    <button id="open-btn">Открыть</button>
-
-    <div id="notification" class="notification"></div>
-
-    <div class="lang-switch">
-      <a href="?lang=ru">RU</a> | <a href="?lang=uz">UZ</a>
+    <!-- Основная навигация с изображением -->
+    <div class="main-nav">
+        <div class="logo-container">
+            <div class="portal-image">
+                <svg width="180" height="50" viewBox="0 0 180 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="180" height="50" fill="white"/>
+                    <text x="10" y="22" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2b3d5c">my.gov.uz</text>
+                    <text x="10" y="40" font-family="Arial, sans-serif" font-size="10" fill="#7a8a9e" data-key="portalText1">Единый портал Интернет-магазина</text>
+                    <text x="10" y="52" font-family="Arial, sans-serif" font-size="10" fill="#7a8a9e" data-key="portalText2">Государственных услуг</text>
+                    <text x="140" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ffc107" opacity="0.9">XYZA</text>
+                </svg>
+            </div>
+            <a href="#" class="logo-text" data-key="portalFull">
+                Единый портал интерактивных государственных услуг
+                <small data-key="officialSite">Официальный сайт</small>
+            </a>
+        </div>
+        <div class="main-links">
+            <a href="#" class="active" data-key="main">Главная</a>
+        </div>
     </div>
-  </div>
 
-  <script src="main.js"></script>
+    <!-- Контейнер с карточкой - обновленной -->
+    <div class="container">
+        <div class="auth-card">
+            <!-- Текст авторизации (точно как на изображении) -->
+            <div class="auth-text" data-key="authText">
+                Пожалуйста пройдите авторизацию чтобы система определила вас. Если документ принадлежит вам, введения ПИН кода не требуется.
+            </div>
+
+            <!-- Ссылка для авторизации -->
+            <div class="auth-link">
+                <a href="#" data-key="authLink">Нажмите здесь для авторизации</a>
+            </div>
+
+            <!-- Заголовок для PIN -->
+            <div class="pin-title" data-key="pinTitle">Введите PIN-код для просмотра документа</div>
+
+            <!-- Форма ввода PIN (жирный ПИН код и кнопка) -->
+            <div class="pin-form">
+                <label class="pin-label" for="pin" data-key="pinLabel">ПИН код</label>
+                <div class="pin-input-group">
+                    <input type="number" id="pin" placeholder="ПИН код" maxlength="4" min="0" max="9999" step="1" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.slice(0,4).replace(/[^0-9]/g, '')">
+                    <button type="button" onclick="checkPin()" data-key="openBtn">Открыть</button>
+                </div>
+                <div class="pin-hint" data-key="pinHint">
+                    PIN-код размещается рядом с QR-кодом документа
+                </div>
+                <div id="pinError" class="pin-error" data-key="pinError">ПИН-код должен содержать ровно 4 цифры</div>
+            </div>
+        </div>
+    </div>
+
+    <footer data-key="footer">
+        Единый портал интерактивных государственных услуг Республики Узбекистан
+    </footer>
+
+    <script>
+        // Словарь для перевода
+        const translations = {
+            ru: {
+                main: 'Главная',
+                lang: 'RU',
+                login: 'Войти',
+                portalText1: 'Единый портал Интернет-магазина',
+                portalText2: 'Государственных услуг',
+                portalFull: 'Единый портал интерактивных государственных услуг',
+                officialSite: 'Официальный сайт',
+                authText: 'Пожалуйста пройдите авторизацию чтобы система определила вас. Если документ принадлежит вам, введения ПИН кода не требуется.',
+                authLink: 'Нажмите здесь для авторизации',
+                pinTitle: 'Введите PIN-код для просмотра документа',
+                pinLabel: 'ПИН код',
+                openBtn: 'Открыть',
+                pinHint: 'PIN-код размещается рядом с QR-кодом документа',
+                pinError: 'ПИН-код должен содержать ровно 4 цифры',
+                footer: 'Единый портал интерактивных государственных услуг Республики Узбекистан'
+            },
+            uz: {
+                main: 'Асосий',
+                lang: 'UZ',
+                login: 'Кириш',
+                portalText1: 'Давлат хизматлари',
+                portalText2: 'Интернет-дўкони',
+                portalFull: 'Ягона интерактив давлат хизматлари портали',
+                officialSite: 'Расмий веб-сайт',
+                authText: 'Илтимос, тизимга киринг. Агар ҳужжат сизга тегишли бўлса, ПИН-код киритиш шарт эмас.',
+                authLink: 'Авторизациядан ўтиш',
+                pinTitle: 'Ҳужжатни кўриш учун ПИН-кодни киритинг',
+                pinLabel: 'ПИН код',
+                openBtn: 'Очиш',
+                pinHint: 'ПИН-код ҳужжатнинг QR-коди ёнида жойлашган',
+                pinError: 'ПИН-код 4 рақамдан иборат бўлиши керак',
+                footer: 'Ўзбекистон Республикаси Ягона интерактив давлат хизматлари портали'
+            },
+            oz: {
+                main: 'Asosiy',
+                lang: 'OZ',
+                login: 'Kirish',
+                portalText1: 'Davlat xizmatlari',
+                portalText2: 'Internet-do\'koni',
+                portalFull: 'Yagona interaktiv davlat xizmatlari portali',
+                officialSite: 'Rasmiy veb-sayt',
+                authText: 'Iltimos, tizimga kiring. Agar hujjat sizga tegishli bo\'lsa, PIN-kod kiritish shart emas.',
+                authLink: 'Avtorizatsiyadan o\'tish',
+                pinTitle: 'Hujjatni ko\'rish uchun PIN-kodni kiriting',
+                pinLabel: 'PIN kod',
+                openBtn: 'Ochish',
+                pinHint: 'PIN-kod hujjatning QR-kodi yonida joylashgan',
+                pinError: 'PIN-kod 4 raqamdan iborat bo\'lishi kerak',
+                footer: 'O\'zbekiston Respublikasi Yagona interaktiv davlat xizmatlari portali'
+            }
+        };
+
+        let currentLang = 'ru';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-key]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'SMALL') {
+                        element.textContent = translations[lang][key];
+                    } else if (element.tagName === 'BUTTON' && element.classList.contains('lang-btn')) {
+                        element.textContent = translations[lang][key];
+                    } else if (element.tagName === 'INPUT') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+
+            document.getElementById('langDropdown').classList.remove('show');
+        }
+
+        document.getElementById('langBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('langDropdown').classList.toggle('show');
+        });
+
+        document.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                changeLanguage(lang);
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('langDropdown');
+            const langBtn = document.getElementById('langBtn');
+            
+            if (!langBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function checkPin() {
+            const pinInput = document.getElementById('pin');
+            const pinError = document.getElementById('pinError');
+            const pinValue = pinInput.value;
+            
+            if (pinValue.length === 4 && /^\d+$/.test(pinValue)) {
+                pinError.style.display = 'none';
+                alert(translations[currentLang].pinLabel + ': ' + pinValue);
+            } else {
+                pinError.style.display = 'block';
+                pinInput.focus();
+            }
+        }
+
+        document.getElementById('pin').addEventListener('keydown', function(e) {
+            if ([46, 8, 9, 27, 13, 110, 190].includes(e.keyCode) ||
+                (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                (e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) ||
+                (e.keyCode === 86 && (e.ctrlKey === true || e.metaKey === true)) ||
+                (e.keyCode === 88 && (e.ctrlKey === true || e.metaKey === true)) ||
+                (e.keyCode >= 35 && e.keyCode <= 40)) {
+                return;
+            }
+            if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
