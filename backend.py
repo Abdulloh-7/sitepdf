@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, send_file, jsonify
 import sqlite3
 
@@ -33,5 +34,5 @@ def get_file():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render задаёт порт через переменную PORT
+    port = int(os.environ.get("PORT", 5000))  # Render задаёт порт
     app.run(host="0.0.0.0", port=port, debug=True)
