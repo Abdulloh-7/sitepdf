@@ -1,19 +1,29 @@
 import sqlite3
 import uuid
-import random
+import os
 
-# настройки
+# ссылка твоего сайта
 BASE_URL = "https://repository-gov-uz-o83y.onrender.com"
 
-# генерируем GUID
-guid = str(uuid.uuid4())
-
-# генерируем PIN (4 цифры)
-pin = str(random.randint(1000, 9999))
-
-# путь к файлу (ВАЖНО: файл должен уже лежать в папке files)
-file_name = input("Введите имя PDF файла (например: test.pdf): ")
+# ввод имени файла
+file_name = input("Введите имя PDF файла (например: test.pdf): ").strip()
 file_path = f"files/{file_name}"
+
+# проверка: существует ли файл
+if not os.path.isfile(file_path):
+    print("❌ Файл не найден в папке files/")
+    exit()
+
+# ввод PIN
+pin = input("Введите PIN (4 цифры): ").strip()
+
+# проверка PIN
+if not pin.isdigit() or len(pin) != 4:
+    print("❌ PIN должен быть ровно 4 цифры")
+    exit()
+
+# генерация GUID
+guid = str(uuid.uuid4())
 
 # запись в базу
 conn = sqlite3.connect("database.db")
@@ -28,8 +38,9 @@ conn.commit()
 conn.close()
 
 # вывод результата
-print("\n✅ Файл добавлен!")
-print("GUID:", guid)
-print("PIN:", pin)
-print("Ссылка для QR:")
+print("\n✅ Файл успешно добавлен!")
+print("📄 Файл:", file_name)
+print("🔑 PIN:", pin)
+print("🆔 GUID:", guid)
+print("\n🔗 Ссылка для QR:")
 print(f"{BASE_URL}/?guid={guid}")
