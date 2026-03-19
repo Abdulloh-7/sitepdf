@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Загрузка PDF</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Введите PIN для открытия PDF</h1>
+
+    <input type="text" id="pin" maxlength="4" placeholder="PIN" />
+
+    <div id="captcha-container" style="display:none;">
+      <img src="captcha.png" alt="CAPTCHA" />
+      <input type="text" id="captcha" placeholder="Введите код с картинки" />
+    </div>
+
+    <button id="open-btn">Открыть</button>
+
+    <div id="notification" class="notification"></div>
+
+    <div class="lang-switch">
+      <a href="?lang=ru">RU</a> | <a href="?lang=uz">UZ</a>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
